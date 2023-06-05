@@ -64,3 +64,4 @@ The system has an admin dashboard, which gives ability to admin to view/edit/del
 ![plot](./public/assets/create1.PNG)
 ![plot](./public/assets/create2.PNG)
 ![plot](./public/assets/create3.PNG)
+![plot](./public/assets/success.PNG)
