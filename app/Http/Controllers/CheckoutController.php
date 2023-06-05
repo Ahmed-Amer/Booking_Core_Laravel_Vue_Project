@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 
 class CheckoutController extends Controller
 {
+
+    
     /**
      * Handle the incoming request.
      *

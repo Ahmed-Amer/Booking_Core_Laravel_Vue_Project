@@ -1,0 +1,75 @@
+.navbar{
+    z-index: 100000;
+}
+.navbar-brand{
+    font-size: 1.6rem !important;
+}
+
+.table-responsive{
+    overflow-x: clip;
+    padding-bottom: 100px;
+}
+
+#myTable_paginate, 
+#myTable_info,
+#myTable_filter,
+.dt-buttons{
+    display: inline-block !important;
+    width: 50% !important;
+}
+
+
+
+
+
+#myTable_filter label{
+    display: block;
+    width: 100%;
+}
+
+
+#myTable_filter label input{
+    width: 85%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    background-clip: padding-box;
+    color: #212529;
+    border: 1px solid #dee2e6;
+    border-radius: 2px;
+}
+
+#myTable_paginate .paginate_button{
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    color: #0d6efd;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    cursor: pointer;
+}
+
+#myTable_paginate .paginate_button:hover(:not(.disabled)){
+    color: #0a58ca;
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+    
+} 
+
+#myTable_paginate .current{
+    background-color: #0d6efd;
+    color: #fff;
+    border-radius: 0.375rem;
+}
+
+
+#myTable_paginate .disabled{
+    color: #6c757d;
+    background-color: #fff;
+    border-color: #dee2e6;
+    border-radius: 0.375rem;
+    cursor: text;
+}
+#myTable_info{
+    font-size: 0.9rem;
+}

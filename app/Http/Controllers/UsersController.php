@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Bookable;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
-class BookableController extends Controller
+class UsersController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,21 +15,20 @@ class BookableController extends Controller
      */
     public function index()
     {
-        return Bookable::all();
+        $users = User::all();
+        return datatables($users)->toJson();
     }
 
     /**
-     * Display all boookables for datatables plugin.
+     * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function dashboardBookables()
+    public function create()
     {
-        $bookables =  Bookable::all();
-         return datatables($bookables)->toJson();
+        //
     }
 
-  
     /**
      * Store a newly created resource in storage.
      *
@@ -37,17 +37,18 @@ class BookableController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'title' => 'required|min:2',
-            'description' => 'required|min:20',
-            'price' => 'required|numeric',
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
-        $bookable = new Bookable();
-        $bookable->title = $request->title;
-        $bookable->description = $request->description;
-        $bookable->price = $request->price;
-        $bookable->save();
+        User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+        ]);
+
     }
 
     /**
@@ -58,7 +59,7 @@ class BookableController extends Controller
      */
     public function show($id)
     {
-        return Bookable::findOrFail($id);
+        //
     }
 
     /**
@@ -92,10 +93,10 @@ class BookableController extends Controller
      */
     public function destroy($id)
     {
-        $bookable =  Bookable::findOrFail($id);
-        $bookable->delete();
+        $user =  User::findOrFail($id);
+        $user->delete();
 
-        $bookables =  Bookable::all();
-        return datatables($bookables)->toJson();
+        $users =  User::all();
+        return datatables($users)->toJson();
     }
 }

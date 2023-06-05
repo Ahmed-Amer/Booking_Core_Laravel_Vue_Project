@@ -1,6 +1,6 @@
 <template>
-  <nav class="navbar navbar-expand-lg">
-    <div class="container">
+  <nav class="navbar navbar-expand-lg sticky-top">
+    <div :class="[{'container-fluid' :isAdmin} , {'container' : !isAdmin}]">
       <router-link to="/" class="navbar-brand">HotelBnb</router-link>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
         aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -20,6 +20,12 @@
 
 
         <ul class="navbar-nav d-flex">
+          <li class="nav-item" v-if="isAdmin">
+            <router-link to="/admin/dashboard" activeClass="active" class="nav-link"><a>
+                Dashboard
+              </a></router-link>
+          </li>
+
           <li class="nav-item">
             <router-link to="/basket" activeClass="active" class="nav-link"><a>
                 Basket
@@ -55,11 +61,17 @@ import { mapState, mapGetters } from 'vuex'
 
 export default
   {
+    data(){
+      return{
+        
 
+      }
+    },
     computed: {
       ...mapState({
         lastSearch: 'lastSearch',
-        isLoggedIn: 'isLoggedIn'
+        isLoggedIn: 'isLoggedIn',
+        isAdmin: 'isAdmin'
       }),
       ...mapGetters({
         itemsLength: 'itemsLength'
@@ -70,6 +82,7 @@ export default
         try {
           axios.post('/logout');
           this.$store.dispatch('logout');
+          this.$router.push({name: 'login'});
         } catch (error) {
           this.$store.dispatch('logout');
         }

@@ -23,6 +23,8 @@
           </div>
         </div>
       </div>
+      <div v-if="userBookings.length == 0">No bookings Available..</div>
+
     </div>
   </div>
 </template>

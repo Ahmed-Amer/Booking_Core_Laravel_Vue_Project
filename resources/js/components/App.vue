@@ -1,5 +1,6 @@
 <template>
     <app-header></app-header>
+    
     <!-- Begin page content -->
     <main class="flex-shrink-0">
         <div class="container" style="padding-top: 40px;">

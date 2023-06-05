@@ -4,6 +4,7 @@
             <i class="fa fa-thumbs-up"></i>
             <h1 class="mt-4">Success!</h1>
             <h2>Your review has been added!</h2>
+            <p style="font-size: 0.8rem;">You will be redirected to profile page in 4 seconds</p>
         </success>
         <div class="row" v-else>
             <div class="col-md-12" v-if="loading">Loading....</div>
@@ -127,6 +128,7 @@
     </div> -->
 </template>
 <script>
+import { isLoggedIn } from '../../shared/auth';
 export default {
     data() {
         return {
@@ -134,6 +136,7 @@ export default {
                 id: this.$route.params.id,
                 rating: 5,
                 content: null,
+                user_id: null
             },
             existingReview: null,
             loading: false,
@@ -185,10 +188,14 @@ export default {
     methods: {
         storeReview() {
             this.reviewAttempted = false;
+            this.review.user_id = isLoggedIn() ? this.$store.state.user.id : null;
             axios.post(`/api/reviews/`, this.review)
                 .then(response => {
                     console.log(response);
                     this.reviewAttempted = true;
+                    setTimeout(()=>{
+                        this.$router.push({name: 'profile'});
+                    }, 4000);
                 }).catch(error => {
                     if (422 === error.response.status) {
                         this.storeErrors = error.response.data.errors;

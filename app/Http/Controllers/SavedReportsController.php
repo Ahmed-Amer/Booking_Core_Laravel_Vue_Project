@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Bookable;
+use App\Models\Report;
 use Illuminate\Http\Request;
 
-class BookableController extends Controller
+class SavedReportsController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,21 +14,20 @@ class BookableController extends Controller
      */
     public function index()
     {
-        return Bookable::all();
+        $users = Report::all();
+        return datatables($users)->toJson();
     }
 
     /**
-     * Display all boookables for datatables plugin.
+     * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function dashboardBookables()
+    public function create()
     {
-        $bookables =  Bookable::all();
-         return datatables($bookables)->toJson();
+        //
     }
 
-  
     /**
      * Store a newly created resource in storage.
      *
@@ -39,15 +38,20 @@ class BookableController extends Controller
     {
         $request->validate([
             'title' => 'required|min:2',
-            'description' => 'required|min:20',
-            'price' => 'required|numeric',
+            'description' => 'required|min:5',
+            'file' => 'required|max:10000|mimes:pdf',
         ]);
 
-        $bookable = new Bookable();
-        $bookable->title = $request->title;
-        $bookable->description = $request->description;
-        $bookable->price = $request->price;
-        $bookable->save();
+        $file = $request->file('file');
+        $pdfName = $file->getClientOriginalName();
+        $updatedpdfName =  'HotelBnb' . '_' . $pdfName;
+        $file->move('reports' , $updatedpdfName);
+
+        $report = new Report;
+        $report->title = $request->title;
+        $report->description = $request->description;
+        $report->file_name = $updatedpdfName;
+        $report->save();
     }
 
     /**
@@ -56,9 +60,19 @@ class BookableController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function download($id)
     {
-        return Bookable::findOrFail($id);
+        $report =  Report::findOrFail($id);
+
+        $filePath = public_path() . "/reports/" . $report->file_name;
+
+        $headers = [
+            'Content-Type' => 'application/pdf',
+        ];
+        $fileName =  'HotelBnb' . time().'.pdf';
+
+        return response()->download($filePath, $fileName, $headers);
+
     }
 
     /**
@@ -92,10 +106,12 @@ class BookableController extends Controller
      */
     public function destroy($id)
     {
-        $bookable =  Bookable::findOrFail($id);
-        $bookable->delete();
+        $report =  Report::findOrFail($id);
+        $filePath = public_path() . "/reports/" . $report->file_name;
+        unlink($filePath);
+        $report->delete();
 
-        $bookables =  Bookable::all();
-        return datatables($bookables)->toJson();
+        $reports =  Report::all();
+        return datatables($reports)->toJson();
     }
 }

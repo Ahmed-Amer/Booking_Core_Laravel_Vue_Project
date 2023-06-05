@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Bookable;
+use App\Models\Booking;
 use Illuminate\Http\Request;
 
-class BookableController extends Controller
+class BookingsController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,21 +14,20 @@ class BookableController extends Controller
      */
     public function index()
     {
-        return Bookable::all();
+        $bookings =  Booking::all();
+        return datatables($bookings)->toJson();
     }
 
     /**
-     * Display all boookables for datatables plugin.
+     * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function dashboardBookables()
+    public function create()
     {
-        $bookables =  Bookable::all();
-         return datatables($bookables)->toJson();
+        //
     }
 
-  
     /**
      * Store a newly created resource in storage.
      *
@@ -37,17 +36,7 @@ class BookableController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'title' => 'required|min:2',
-            'description' => 'required|min:20',
-            'price' => 'required|numeric',
-        ]);
-
-        $bookable = new Bookable();
-        $bookable->title = $request->title;
-        $bookable->description = $request->description;
-        $bookable->price = $request->price;
-        $bookable->save();
+        //
     }
 
     /**
@@ -58,7 +47,7 @@ class BookableController extends Controller
      */
     public function show($id)
     {
-        return Bookable::findOrFail($id);
+        //
     }
 
     /**
@@ -92,10 +81,10 @@ class BookableController extends Controller
      */
     public function destroy($id)
     {
-        $bookable =  Bookable::findOrFail($id);
-        $bookable->delete();
+        $booking =  Booking::findOrFail($id);
+        $booking->delete();
 
-        $bookables =  Bookable::all();
-        return datatables($bookables)->toJson();
+        $bookings =  Booking::all();
+        return datatables($bookings)->toJson();
     }
 }

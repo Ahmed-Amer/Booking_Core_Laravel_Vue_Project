@@ -14,7 +14,8 @@ export const store = createStore({
         items: [],
       },
       isLoggedIn: false,
-      user: {}
+      user: {},
+      isAdmin : false
     }
   },
   getters: {
@@ -26,7 +27,6 @@ export const store = createStore({
     },
     alreadyInBasket: (state) => (id) => {
       return state.basket.items.reduce((result , item) => result || id == item.bookable.id , false)
-
     }
   },
   mutations: {
@@ -47,6 +47,9 @@ export const store = createStore({
     },
     setLoggedIn(state, payload){
       state.isLoggedIn = payload;
+    },
+    setIsAdmin(state, payload){
+      state.isAdmin = payload;
     }
   },
   actions: {
@@ -87,15 +90,24 @@ export const store = createStore({
           const user =  (await axios.get('/user')).data;
           context.commit("setUser" , user);
           context.commit("setLoggedIn" , true);
+          context.dispatch("checkAdmin" , user.role);
         } catch (error) {
           context.dispatch("logout");
         }
       }
 
     },
+    async checkAdmin(context , role){
+      if(role == '777'){
+        context.commit("setIsAdmin" , true);
+      }else{
+        context.commit("setIsAdmin" , false);
+      }
+    },
     logout(context){
       context.commit("setUser" , {});
       context.commit("setLoggedIn" , false);
+      context.commit("setIsAdmin" , false);
       logOut();
     }
   }

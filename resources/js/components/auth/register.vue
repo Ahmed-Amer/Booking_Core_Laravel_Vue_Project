@@ -55,10 +55,10 @@
  </template>
  
 
-
-
  <script>
  import { logIn } from '../../shared/auth';
+ import { mapState } from 'vuex'
+ 
  export default {
     data() {
        return {
@@ -72,6 +72,11 @@
           loading: false
        }
     },
+    computed : {
+      ...mapState({
+        isAdmin: 'isAdmin'
+      }),
+    },
     methods: {
        async register() {
           this.loading = true;
@@ -81,8 +86,8 @@
              const response = await axios.post('/register' , this.user);
             if(201 == response.status){
                 logIn();
-                this.$store.dispatch("loadUser");
-                this.$router.push({name : "home"});
+                await this.$store.dispatch("loadUser");
+                this.isAdmin ? this.$router.push({name : "dashboard"}) : this.$router.push({name : "home"});
             }
           } catch (error) {
              this.errors = error.response && error.response.data.errors;

@@ -4,6 +4,7 @@
             <i class="fa fa-thumbs-up"></i>
             <h1 class="mt-4">Success!</h1>
             <h2>Congratulation on your purchase!</h2>
+            <p style="font-size: 0.8rem;">You will be redirected to home page in 4 seconds</p>
         </success>
         <div class="row" v-else>
             <div class="col-md-8" v-if="itemsLength != 0">
@@ -66,9 +67,19 @@
                 <div class="row">
                     <div class="col-md-12 form-group">
                         <div class="d-grid gap-2">
-                            <buttton class="btn btn-md btn-primary mt-2" @click="saveBooking">
+                            <!-- <buttton class="btn btn-md btn-primary mt-2" @click="saveBooking">
                                 Book Now
-                            </buttton>
+                            </buttton> -->
+                            <!-- Set up a container element for the button -->
+                            <div class="mx-auto w-100 paypal" ref="paypal"></div>
+
+                            <div v-if="loadingPaypal" >
+                                <div class="text-center">
+                                    <h5 class="text-center">Checking your payment please wait!</h5>
+                                </div>
+                            </div>
+
+
                         </div>
                     </div>
                 </div>
@@ -126,27 +137,73 @@ export default {
                 state: null,
                 zip: null,
             },
-            auth_user : {
-                id : null
+            auth_user: {
+                id: null
             },
             errors: null,
             loading: false,
-            bookingAttempted: false
+            bookingAttempted: false,
+            total_paypal_payments: 0,
+            loadingPaypal: false
         }
     },
     computed: {
         ...mapGetters({
             itemsInBasket: 'itemsInBasket',
-            itemsLength: 'itemsLength'
+            itemsLength: 'itemsLength',
         }),
-        user_id(){
-          return isLoggedIn() ? this.$store.state.user.id : null;
-        },
         bookingStored() {
             return !this.loading && this.itemsLength == 0 && this.bookingAttempted;
         }
     },
+    mounted() {
+        const script = document.createElement("script");
+        script.src =
+            "https://www.paypal.com/sdk/js?client-id=AXjGtYlCjYelqwlsnrk_PwFX6BoH6uiq2Rtx24B3qCXwcG-9l7XUi8-ROKXLmuEqy9VDSzAJdWcFGcFB";
+        script.addEventListener("load", this.setLoaded);
+        document.body.appendChild(script);
+
+        //calculate total payments
+        if (this.itemsInBasket) {
+            this.itemsInBasket.forEach((item , index) => {
+                this.total_paypal_payments = this.total_paypal_payments + item['price']['total_price'];
+            });
+        }
+
+    },
     methods: {
+        setLoaded() {
+            this.loadingPaypal = false;
+            window.paypal
+                .Buttons({
+                    createOrder: (data, actions) => {
+                        return actions.order.create({
+                            purchase_units: [
+                                {
+                                    description: "HotelBnb System Booking",
+                                    amount: {
+                                        currency_code: "USD",
+                                        value: this.total_paypal_payments
+                                    }
+                                }
+                            ]
+                        });
+                    },
+                    onApprove: async (data, actions, resp) => {
+                        this.loadingPaypal = true;
+                        const order = await actions.order.capture();
+                        this.data;
+                        this.loadingPaypal = false;
+                        this.saveBooking();
+                        // window.location.href = "./paymentsuccess/" + this.resp;
+                    },
+                    onError: err => {
+                        console.log(err);
+                    }
+                })
+                .render(this.$refs.paypal);
+        },
+
         trashElement(id) {
             this.$store.dispatch('removeFromBasket', id);
         },
@@ -172,6 +229,10 @@ export default {
                     this.loading = false;
                     this.bookingAttempted = true;
                     this.$store.dispatch('clearBasket');
+                    setTimeout(()=>{
+                        this.$router.push({name: 'home'});
+                    }, 4000);
+                    
                 })
                 .catch(error => {
                     this.errors = error.response.data.errors;
@@ -195,5 +256,9 @@ export default {
 .form-error {
     font-size: 0.6rem;
     color: red;
+}
+.paypal{
+    display: block !important;
+    margin-top: 30px;
 }
 </style>

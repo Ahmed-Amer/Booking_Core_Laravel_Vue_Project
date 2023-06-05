@@ -46,6 +46,7 @@
 
 <script>
 import { logIn } from '../../shared/auth';
+import { mapState } from 'vuex';
 export default {
    data() {
       return {
@@ -55,6 +56,11 @@ export default {
          loading: false
       }
    },
+   computed : {
+      ...mapState({
+        isAdmin: 'isAdmin'
+      }),
+    },
    methods: {
       async login() {
          this.loading = true;
@@ -69,8 +75,9 @@ export default {
             });
 
             logIn();
-            this.$store.dispatch("loadUser");
-            this.$router.push({name : "home"});
+            await this.$store.dispatch("loadUser");
+            this.isAdmin ? this.$router.push({name : "dashboard"}) : this.$router.push({name : "home"});
+
          } catch (error) {
             this.errors = error.response && error.response.data.errors;
          }

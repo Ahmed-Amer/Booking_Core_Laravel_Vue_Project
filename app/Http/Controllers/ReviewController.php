@@ -19,7 +19,8 @@ class ReviewController extends Controller
         $data = $request->validate([
             'id' => 'required|size:36|unique:reviews',
             'rating' => 'required|in:1,2,3,4,5',
-            'content' => 'required|min:2'
+            'content' => 'required|min:2',
+            'user_id' => ''
         ]);
        
         $booking = Booking::findBookingByReviewkey($data['id']);
@@ -34,6 +35,7 @@ class ReviewController extends Controller
             $review = Review::make($data);
             $review->booking_id = $booking->id;
             $review->bookable_id = $booking->bookable_id;
+            $review->user_id = $request->user_id;
             $review->save();
             
             return new ReviewResource($review);

@@ -9,7 +9,12 @@ import { createApp } from 'vue';
 import App from './components/App.vue';
 import { router } from './routes';
 import { store } from './store';
+import DataTable from 'datatables.net-vue3';
+import DataTablesCore from 'datatables.net';
 
+
+
+DataTable.use(DataTablesCore);
 /**
  * Next, we will create a fresh Vue application instance. You may then begin
  * registering components with the application instance so they are ready
@@ -44,3 +49,6 @@ app.component('success', Success);
 app.component('review-stars', ReviewStars);
 
 app.mount('#app');
+
+
+        
